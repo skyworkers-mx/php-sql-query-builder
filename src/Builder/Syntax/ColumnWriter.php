@@ -157,6 +157,10 @@ class ColumnWriter
         // $columnString = (empty($table)) ? '' : "{$table}.";
         $columnString = $this->writer->writeColumnName($column);
 
-        return $columnString;
+        $columnString = explode(".", str_replace("`", "", $columnString));
+        array_walk($columnString, function(&$column) {
+            $column = "`{$column}`";
+        });
+        return implode(".", $columnString);
     }
 }

@@ -26,25 +26,24 @@
 				->setTable('user');
 
 			$query->setColumns([
-						'userId'   => 'user_id',
-						'username' => 'name',
-						'email'    => 'email',
-						'created_at'
+						'userId'   => 'user.user_id',
+						'username' => 'user.name',
+						'email'    => 'user.email',
+						'user.created_at'
 				])
 				->orderBy('user_id')
 				->leftJoin(
 					'news', //join table
-					'user_id', //origin table field used to join
-					'author_id', //join column
-					['newsTitle' => 'title', 'body', 'created_at', 'updated_at']
+					'user.user_id', //origin table field used to join
+					'news.author_id' //join column
 				)
 				->on()
-				->equals('author_id', 1); //enforcing a condition on the join column
+				->equals('news.author_id', 1); //enforcing a condition on the join column
 
 			$query
 				->where()
-				->greaterThan('user_id', 5)
-				->notLike('username', 'John')
+				->greaterThan('user.user_id', 5)
+				->notLike('user.username', 'John')
 				->end();
 
 			$query
