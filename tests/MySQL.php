@@ -16,9 +16,7 @@
 			 $this->builder = new MySqlBuilder();
 		}
 
-		/**
-		 * @test
-		 */
+
 		public function test() {
 
 			$builder = new MySqlBuilder();
@@ -48,6 +46,20 @@
 
 			$query
 				->orderBy('created_at');
+
+
+		}
+
+
+		/**
+		 * @test
+		 */
+		public function test2()
+		{
+
+			$builder = new MySqlBuilder();
+			$query = $builder->select()
+				->setTable('user');
 
 			echo "query: ";
 			echo $builder->writeFormatted($query);

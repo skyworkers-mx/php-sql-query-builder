@@ -369,19 +369,13 @@ class GenericBuilder implements BuilderInterface
      */
     public function writeColumnName(Column $column)
     {
-        $name = $column->getName();
-
-        if ($name === Column::ALL) {
-            return $this->writeColumnAll();
-        }
-
-        return $name;
+        return $column->getName();
     }
 
     /**
      * @return string
      */
-    protected function writeColumnAll()
+    public function writeColumnAll()
     {
         return '*';
     }

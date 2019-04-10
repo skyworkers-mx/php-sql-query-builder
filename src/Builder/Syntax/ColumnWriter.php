@@ -151,16 +151,15 @@ class ColumnWriter
      */
     public function writeColumn(Column $column)
     {
-        $alias = $column->getTable()->getAlias();
-        $table = ($alias) ? $this->writer->writeTableAlias($alias) : $this->writer->writeTable($column->getTable());
-
-        // $columnString = (empty($table)) ? '' : "{$table}.";
-        $columnString = $this->writer->writeColumnName($column);
-
-        $columnString = explode(".", str_replace("`", "", $columnString));
-        array_walk($columnString, function(&$column) {
+        $name = $this->writer->writeColumnName($column);
+        if ($name === Column::ALL) {
+            return $this->writer->writeColumnAll();
+        }
+        $name = str_replace("`", "", $name);
+        $name = explode(".", $name);
+        array_walk( $name, function (&$column) {
             $column = "`{$column}`";
         });
-        return implode(".", $columnString);
+        return implode(".", $name);
     }
 }
