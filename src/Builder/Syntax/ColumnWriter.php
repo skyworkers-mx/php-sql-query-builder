@@ -154,8 +154,8 @@ class ColumnWriter
         $alias = $column->getTable()->getAlias();
         $table = ($alias) ? $this->writer->writeTableAlias($alias) : $this->writer->writeTable($column->getTable());
 
-        $columnString = (empty($table)) ? '' : "{$table}.";
-        $columnString .= $this->writer->writeColumnName($column);
+        // $columnString = (empty($table)) ? '' : "{$table}.";
+        $columnString = $this->writer->writeColumnName($column);
 
         return $columnString;
     }
