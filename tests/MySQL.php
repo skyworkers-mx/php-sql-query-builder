@@ -71,8 +71,17 @@
 					['F' => 'EF_FOLIOS'],
 					"PIV.id_folio",
 					"F.id"
-				)
-			;
+				);
+
+				$query->setColumns(["id"]) ;
+				
+				$query->addColumn(["T" => "test"]);
+				
+				
+				$query->addColumn(["D" => "David"]);
+				
+				$query->removeColumn( "David" );
+				
 
 
 

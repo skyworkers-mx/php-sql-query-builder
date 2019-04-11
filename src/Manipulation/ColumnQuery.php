@@ -237,7 +237,7 @@ class ColumnQuery
      *
      * @throws QueryException
      */
-    public function getColumns()
+    public function getColumns() : array
     {
         if (\is_null($this->select->getTable())) {
             throw new QueryException('No table specified for the Select instance');
@@ -258,6 +258,36 @@ class ColumnQuery
     {
         $this->columns = $columns;
 
+        return $this;
+    }
+
+    public function addColumn($column) {
+        if(gettype($column) == 'array') {
+            $this->columns = array_merge($this->columns, $column);
+        } else {
+            \array_push($this->columns, $column);
+        }
+        return $this;
+    }
+
+    public function addColumns(array $columns)
+    {
+        $this->columns = array_merge($this->columns, $columns);
+        return $this;
+    }
+
+    public function removeColumn( $search) {
+        $position = 0;
+        $keys = array_keys($this->columns);
+        $values = array_values($this->columns);
+        foreach($values as $key => $value) {
+            $index = $keys[$key];
+            if($index === $search || $value === $search) {
+                array_splice($this->columns, $key, 1);
+                break;
+            }
+            $position++;
+        }
         return $this;
     }
 }

@@ -259,6 +259,19 @@ class Select extends AbstractBaseQuery
         return $this->columnQuery->setColumns($columns);
     }
 
+    public function addColumn($column) {
+        return $this->columnQuery->addColumn( $column);
+    }
+
+    public function addColumns($columns) {
+        return $this->columnQuery->addColumns( $columns);
+    }
+
+    public function removeColumn($column)
+    {
+        return $this->columnQuery->removeColumn($column);
+    } 
+
     /**
      * Allows setting a Select query as a column value.
      *
