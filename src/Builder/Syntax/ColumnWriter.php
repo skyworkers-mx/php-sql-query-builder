@@ -151,15 +151,25 @@ class ColumnWriter
      */
     public function writeColumn(Column $column)
     {
+        # TODO: 🚀 ⚠️
+        # TRAZAR CON MAS CALMA COMO FUNCIONA
+        # PARA ELIMINAR TODO ESTE BLOQUE DE CODIGO PROBABLEMENTE INNECESARIO
         $name = $this->writer->writeColumnName($column);
         if ($name === Column::ALL) {
             return $this->writer->writeColumnAll();
         }
+        $function = substr($name, 0, strpos($name, '('));
+        $name = str_replace($function . '(', "", $name);
+        $name = str_replace(')', "", $name);
         $name = str_replace("`", "", $name);
         $name = explode(".", $name);
-        array_walk( $name, function (&$column) {
+        array_walk($name, function (&$column) {
             $column = "`{$column}`";
         });
-        return implode(".", $name);
+        $name = implode(".", $name);
+        if($function) {
+            return "{$function}({$name})";
+        }
+        return $name;
     }
 }

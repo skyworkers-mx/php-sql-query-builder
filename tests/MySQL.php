@@ -60,27 +60,7 @@
 			$builder = new MySqlBuilder();
 			$query = $builder->select();
 
-			$query
-				->setTable([ 'O' => 'EF_Operaciones'])
-				->innerJoin(
-					[ 'PIV' => 'EF_Operaciones_Folios'], //join table
-					'PIV.id_request', //origin table field used to join
-					'O.id' //join column
-				)
-				->innerJoin(
-					['F' => 'EF_FOLIOS'],
-					"PIV.id_folio",
-					"F.id"
-				);
 
-				$query->setColumns(["id"]) ;
-				
-				$query->addColumn(["T" => "test"]);
-				
-				
-				$query->addColumn(["D" => "David"]);
-				
-				$query->removeColumn( "David" );
 				
 
 
