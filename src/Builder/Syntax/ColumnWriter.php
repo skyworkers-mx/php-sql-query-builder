@@ -97,10 +97,12 @@ class ColumnWriter
 
         if (!empty($valueAsColumns)) {
             foreach ($valueAsColumns as $alias => $value) {
-                $value = $this->writer->writePlaceholderValue($value);
+                // $value = $this->writer->writePlaceholderValue($value);
                 $newValueColumn = array($alias => $value);
-
-                $newColumns[] = SyntaxFactory::createColumn($newValueColumn, null);
+                // $newColumns[] = $newValueColumn;
+                $column = SyntaxFactory::createColumn($newValueColumn, null);
+                $column->setIfIsAlias(true);
+                $newColumns[] = $column;
             }
         }
 
@@ -163,9 +165,16 @@ class ColumnWriter
         $name = str_replace(')', "", $name);
         $name = str_replace("`", "", $name);
         $name = explode(".", $name);
-        array_walk($name, function (&$column) {
-            $column = "`{$column}`";
-        });
+        $is_alias = $column->isAlias();
+        if($is_alias) {
+            array_walk($name, function (&$column) {
+                $column = "'{$column}'";
+            });
+        } else {
+            array_walk($name, function (&$column) {
+                $column = "`{$column}`";
+            });
+        }
         $name = implode(".", $name);
         if($function) {
             return "{$function}({$name})";

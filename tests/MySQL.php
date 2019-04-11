@@ -12,11 +12,6 @@
 		 */
 		protected $builder;
 
-		public function setUp() {
-			 $this->builder = new MySqlBuilder();
-		}
-
-
 		// public function test() {
 
 			// $builder = new MySqlBuilder();
@@ -59,9 +54,6 @@
 
 			$builder = new MySqlBuilder();
 			$query = $builder->select();
-
-
-				
 
 
 

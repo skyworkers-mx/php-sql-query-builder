@@ -19,6 +19,8 @@ class Column implements QueryPartInterface
 {
     const ALL = '*';
 
+    protected $is_alias = false;
+
     /**
      * @var Table
      */
@@ -44,6 +46,14 @@ class Column implements QueryPartInterface
         $this->setName($name);
         $this->setTable($table);
         $this->setAlias($alias);
+    }
+
+    public function setIfIsAlias(bool $value) {
+        $this->is_alias = $value;
+    }
+
+    public function isAlias() : bool {
+        return $this->is_alias;
     }
 
     /**
