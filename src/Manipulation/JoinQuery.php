@@ -98,7 +98,10 @@ class JoinQuery
         $columns = [],
         $joinType = null
     ) {
-        if (!isset($this->joins[$table])) {
+        $table = gettype($table) == "string" ? [$table] : $table;
+        $keys = array_keys($table);
+        $table_name = $table[$keys[0]];
+        if (!isset($this->joins[$table_name])) {
             $select = QueryFactory::createSelect($table);
             $select->setColumns($columns);
             $select->setJoinType($joinType);
@@ -106,9 +109,9 @@ class JoinQuery
             $this->addJoin($select, $selfColumn, $refColumn);
         }
 
-        return $this->joins[$table];
+        return $this->joins[$table_name];
     }
-
+    
     /**
      * @param Select $select
      * @param mixed  $selfColumn

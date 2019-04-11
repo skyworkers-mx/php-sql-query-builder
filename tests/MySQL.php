@@ -3,7 +3,7 @@
 	use PHPUnit\Framework\TestCase;
 	use NilPortugues\Sql\QueryBuilder\Builder\MySqlBuilder;
 	/**
-	 * Class Skynets.
+	 * Class Skynet
 	 */
 	class Skynet extends TestCase {
 
@@ -17,38 +17,38 @@
 		}
 
 
-		public function test() {
+		// public function test() {
 
-			$builder = new MySqlBuilder();
-			$query = $builder->select()
-				->setTable('user');
+			// $builder = new MySqlBuilder();
+			// $query = $builder->select()
+			// 	->setTable('user');
 
-			$query->setColumns([
-						'userId'   => 'user.user_id',
-						'username' => 'user.name',
-						'email'    => 'user.email',
-						'user.created_at'
-				])
-				->orderBy('user_id')
-				->leftJoin(
-					'news', //join table
-					'user.user_id', //origin table field used to join
-					'news.author_id' //join column
-				)
-				->on()
-				->equals('news.author_id', 1); //enforcing a condition on the join column
+			// $query->setColumns([
+			// 			'userId'   => 'user.user_id',
+			// 			'username' => 'user.name',
+			// 			'email'    => 'user.email',
+			// 			'user.created_at'
+			// 	])
+			// 	->orderBy('user_id')
+			// 	->leftJoin(
+			// 		'news', //join table
+			// 		'user.user_id', //origin table field used to join
+			// 		'news.author_id' //join column
+			// 	)
+			// 	->on()
+			// 	->equals('news.author_id', 1); //enforcing a condition on the join column
 
-			$query
-				->where()
-				->greaterThan('user.user_id', 5)
-				->notLike('user.username', 'John')
-				->end();
+			// $query
+			// 	->where()
+			// 	->greaterThan('user.user_id', 5)
+			// 	->notLike('user.username', 'John')
+			// 	->end();
 
-			$query
-				->orderBy('created_at');
+			// $query
+			// 	->orderBy('created_at');
 
 
-		}
+		// }
 
 
 		/**
@@ -58,10 +58,24 @@
 		{
 
 			$builder = new MySqlBuilder();
-			$query = $builder->select()
-				->setTable('user');
+			$query = $builder->select();
 
-			echo "query: ";
-			echo $builder->writeFormatted($query);
+			$query
+				->setTable([ 'O' => 'EF_Operaciones'])
+				->innerJoin(
+					[ 'PIV' => 'EF_Operaciones_Folios'], //join table
+					'PIV.id_request', //origin table field used to join
+					'O.id' //join column
+				)
+				->innerJoin(
+					['F' => 'EF_FOLIOS'],
+					"PIV.id_folio",
+					"F.id"
+				)
+			;
+
+
+
+			echo $builder->writeFormatted($query); 
 		}
 	}
