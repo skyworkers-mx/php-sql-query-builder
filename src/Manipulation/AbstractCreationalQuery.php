@@ -30,7 +30,7 @@ abstract class AbstractCreationalQuery extends AbstractBaseQuery
             $this->setTable($table);
         }
 
-        if (!empty($values)) {
+        if (!is_null($values)) {
             $this->setValues($values);
         }
     }
@@ -54,9 +54,8 @@ abstract class AbstractCreationalQuery extends AbstractBaseQuery
             if (is_int($value)) {
                 return true;
             }
-            return $value;
+            return true;
         });
-        
         return $this;
     }
 }
