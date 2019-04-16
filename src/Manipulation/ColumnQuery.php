@@ -117,6 +117,17 @@ class ColumnQuery
     }
 
     /**
+     * Remueve del arreglo una columna
+     *
+     * @param string $key
+     * @return $this
+     */
+    public function removeFromGroupBy(string $key)
+    {
+        return $this->select->removeFromGroupBy( $key);
+    }
+
+    /**
      * Allows setting a Select query as a column value.
      *
      * @param array $column

@@ -436,6 +436,18 @@ class Select extends AbstractBaseQuery
     }
 
     /**
+     * Remueve del arreglo una columna
+     *
+     * @param string $key
+     * @return $this
+     */
+    public function removeFromGroupBy(string $key) {
+       $key = array_search($key, $this->groupBy);
+       \array_splice($this->groupBy, $key, 1);
+        return $this;
+    }
+
+    /**
      * @return Where
      */
     public function getJoinCondition()
