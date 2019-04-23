@@ -14,6 +14,8 @@ use NilPortugues\Sql\QueryBuilder\Syntax\Where;
 use NilPortugues\Sql\QueryBuilder\Syntax\Column;
 use NilPortugues\Sql\QueryBuilder\Syntax\SyntaxFactory;
 
+use NilPortugues\Sql\QueryBuilder\Manipulation\Select;
+
 /**
  * Class JoinQuery.
  */
@@ -100,8 +102,15 @@ class JoinQuery
     ) {
         $table = gettype($table) == "string" ? [$table] : $table;
         $keys = array_keys($table);
-        $table_name = $table[$keys[0]];
-        if (!isset($this->joins[$table_name])) {
+        $instance = $table[$keys[0]];
+        
+        if( $instance instanceof Select) {
+            $table_name = $instance->getTable()->getAlias();
+        } else {
+            $table_name = $instance;
+        }
+
+        if (!isset($this->joins[ $table_name ])) {
             $select = QueryFactory::createSelect($table);
             $select->setColumns($columns);
             $select->setJoinType($joinType);
@@ -109,9 +118,9 @@ class JoinQuery
             $this->addJoin($select, $selfColumn, $refColumn);
         }
 
-        return $this->joins[$table_name];
+        return $this->joins[ $table_name ];
     }
-    
+
     /**
      * @param Select $select
      * @param mixed  $selfColumn
@@ -122,9 +131,15 @@ class JoinQuery
     public function addJoin(Select $select, $selfColumn, $refColumn)
     {
         $select->isJoin(true);
-        $table = $select->getTable()->getName();
+        $instance = $select->getTable()->getName();
 
-        if (!isset($this->joins[$table])) {
+        if ($instance instanceof Select) {
+            $table_name = $instance->getTable()->getAlias();
+        } else {
+            $table_name = $instance;
+        }
+
+        if (!isset($this->joins[ $table_name ])) {
             if (!$selfColumn instanceof Column) {
                 $newColumn = array($selfColumn);
                 $selfColumn = SyntaxFactory::createColumn(
@@ -134,10 +149,10 @@ class JoinQuery
             }
 
             $select->joinCondition()->equals($refColumn, $selfColumn);
-            $this->joins[$table] = $select;
+            $this->joins[ $table_name ] = $select;
         }
 
-        return $this->joins[$table];
+        return $this->joins[ $table_name ];
     }
 
     /**

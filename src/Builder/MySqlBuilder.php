@@ -13,6 +13,10 @@ namespace NilPortugues\Sql\QueryBuilder\Builder;
 use NilPortugues\Sql\QueryBuilder\Syntax\Column;
 use NilPortugues\Sql\QueryBuilder\Syntax\Table;
 
+use NilPortugues\Sql\QueryBuilder\Manipulation\Select;
+use NilPortugues\Sql\QueryBuilder\Manipulation\Union;
+
+
 /**
  * Class MySqlBuilder.
  */
@@ -47,6 +51,10 @@ class MySqlBuilder extends GenericBuilder
      */
     public function writeTableName(Table $table)
     {
+        $name = parent::writeTableName($table);
+        if($name instanceof Select || $name instanceof Union) {
+            return "($name)";
+        }
         return $this->wrapper(parent::writeTableName($table));
     }
 

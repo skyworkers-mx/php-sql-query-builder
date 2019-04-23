@@ -96,9 +96,9 @@ final class WriterFactory
      *
      * @return IntersectWriter
      */
-    public static function createIntersectWriter(GenericBuilder $writer)
+    public static function createIntersectWriter(GenericBuilder $writer,PlaceholderWriter $placeholderWriter)
     {
-        return new IntersectWriter($writer);
+        return new IntersectWriter($writer, $placeholderWriter);
     }
 
     /**
@@ -116,9 +116,9 @@ final class WriterFactory
      *
      * @return UnionWriter
      */
-    public static function createUnionWriter(GenericBuilder $writer)
+    public static function createUnionWriter(GenericBuilder $writer, PlaceholderWriter $placeholderWriter)
     {
-        return new UnionWriter($writer);
+        return new UnionWriter($writer, $placeholderWriter);
     }
 
     /**
@@ -126,8 +126,8 @@ final class WriterFactory
      *
      * @return UnionAllWriter
      */
-    public static function createUnionAllWriter(GenericBuilder $writer)
+    public static function createUnionAllWriter(GenericBuilder $writer, PlaceholderWriter $placeholderWriter)
     {
-        return new UnionAllWriter($writer);
+        return new UnionAllWriter($writer, $placeholderWriter);
     }
 }

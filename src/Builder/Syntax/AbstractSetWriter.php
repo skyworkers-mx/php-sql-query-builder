@@ -16,20 +16,14 @@ use NilPortugues\Sql\QueryBuilder\Syntax\QueryPartInterface;
 /**
  * Class AbstractSetWriter.
  */
-abstract class AbstractSetWriter
+abstract class AbstractSetWriter extends AbstractBaseWriter
 {
     /**
      * @var GenericBuilder
      */
     protected $writer;
 
-    /**
-     * @param GenericBuilder $writer
-     */
-    public function __construct(GenericBuilder $writer)
-    {
-        $this->writer = $writer;
-    }
+
 
     /**
      * @param QueryPartInterface $setClass

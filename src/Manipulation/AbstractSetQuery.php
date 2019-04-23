@@ -10,12 +10,10 @@
 
 namespace NilPortugues\Sql\QueryBuilder\Manipulation;
 
-use NilPortugues\Sql\QueryBuilder\Syntax\QueryPartInterface;
-
 /**
  * Class AbstractSetQuery.
  */
-abstract class AbstractSetQuery implements QueryInterface, QueryPartInterface
+abstract class AbstractSetQuery extends AbstractBaseQuery
 {
     /**
      * @var array
@@ -40,41 +38,5 @@ abstract class AbstractSetQuery implements QueryInterface, QueryPartInterface
     public function getUnions()
     {
         return $this->union;
-    }
-
-    /**
-     * @throws QueryException
-     *
-     * @return \NilPortugues\Sql\QueryBuilder\Syntax\Table
-     */
-    public function getTable()
-    {
-        throw new QueryException(
-            \sprintf('%s does not support tables', $this->partName())
-        );
-    }
-
-    /**
-     * @throws QueryException
-     *
-     * @return \NilPortugues\Sql\QueryBuilder\Syntax\Where
-     */
-    public function getWhere()
-    {
-        throw new QueryException(
-            \sprintf('%s does not support WHERE.', $this->partName())
-        );
-    }
-
-    /**
-     * @throws QueryException
-     *
-     * @return \NilPortugues\Sql\QueryBuilder\Syntax\Where
-     */
-    public function where()
-    {
-        throw new QueryException(
-            \sprintf('%s does not support the WHERE statement.', $this->partName())
-        );
     }
 }

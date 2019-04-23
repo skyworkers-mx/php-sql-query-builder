@@ -92,9 +92,9 @@ final class QueryFactory
     /**
      * @return Union
      */
-    public static function createUnion()
+    public static function createUnion( $builder )
     {
-        return new Union();
+        return new Union( $builder );
     }
 
     /**

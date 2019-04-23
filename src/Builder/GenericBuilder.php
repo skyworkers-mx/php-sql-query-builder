@@ -159,7 +159,7 @@ class GenericBuilder implements BuilderInterface
      */
     public function union()
     {
-        return QueryFactory::createUnion();
+        return QueryFactory::createUnion($this);
     }
 
     /**
