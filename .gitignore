@@ -2,3 +2,5 @@ build/
 vendor/
 bin/
 composer.lock
+phpunit.xml.dist
+.phpunit.result.cache
