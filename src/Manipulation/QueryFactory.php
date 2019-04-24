@@ -100,8 +100,8 @@ final class QueryFactory
     /**
      * @return UnionAll
      */
-    public static function createUnionAll()
+    public static function createUnionAll( $builder )
     {
-        return new UnionAll();
+        return new UnionAll( $builder );
     }
 }

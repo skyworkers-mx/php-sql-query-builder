@@ -28,7 +28,7 @@ class UnionWriter extends AbstractSetWriter
         
         $orderBy = $this->writeSelectOrderBy($union);
         $command = $this->abstractWrite($union, 'getUnions', Union::UNION);
-        $command .= $orderBy;
+        $command .=  " ". $orderBy;
         
         // $command .= $orderBy;
         return $command;
