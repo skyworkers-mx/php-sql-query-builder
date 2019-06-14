@@ -102,12 +102,12 @@ class JoinQuery
     ) {
         $table = gettype($table) == "string" ? [$table] : $table;
         $keys = array_keys($table);
-        $instance = $table[$keys[0]];
+        $instance = $table[ $keys[0] ];
         
         if( $instance instanceof Select) {
             $table_name = $instance->getTable()->getAlias();
         } else {
-            $table_name = $instance;
+            $table_name = $keys[0] . "_" . $instance;
         }
 
         if (!isset($this->joins[ $table_name ])) {
@@ -136,7 +136,7 @@ class JoinQuery
         if ($instance instanceof Select) {
             $table_name = $instance->getTable()->getAlias();
         } else {
-            $table_name = $instance;
+            $table_name = $select->getTable()->getAlias() . "_" . $instance;
         }
 
         if (!isset($this->joins[ $table_name ])) {
