@@ -13,43 +13,14 @@ namespace NilPortugues\Sql\QueryBuilder\Manipulation;
 /**
  * Class Union.
  */
-class Union extends AbstractSetQuery
+class Union extends UnionSetQuery
 {
-    const UNION = 'UNION';
-
-    public $builder = null;
-
-    public function __construct($builder) {
-        $this->builder = $builder;
-    }
-
+    const PART_NAME = 'UNION';
     /**
      * @return string
      */
     public function partName()
     {
-        return 'UNION';
-    }
-
-    /**
-     * @return array
-     */
-    public function getAllOrderBy()
-    {
-        return $this->orderBy;
-    }
-
-    /**
-     * Converts this query into an SQL string by using the injected builder.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        try {
-            return $this->builder->write($this);
-        } catch (\Exception $e) {
-            return \sprintf('[%s] %s', \get_class($e), $e->getMessage());
-        }
+        return self::PART_NAME;
     }
 }
