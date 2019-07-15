@@ -205,6 +205,27 @@ class GenericBuilder implements BuilderInterface
         return $this->sqlFormatter->format($this->write($query));
     }
 
+    public function writeFormattedWithValues(QueryInterface $query)
+    {
+        $query = $this->writeFormatted($query);
+        $params = $this->getValues();
+        # Verifica si existen parametros
+        if(count($params) > 0) {
+            # Obteniendo llaves
+            $keys = array_keys($params);
+            $regex = '/\:v[0-9]+/m';
+            $index = 0;
+            preg_replace_callback($regex, function($match) use (&$query, &$index, $params, $keys) {
+                $replace = $match[0] ?? "";
+                if($replace != "") {
+                    $query = str_replace($replace, $params[$keys[$index]], $query);
+                    $index++;
+                }
+            }, $query);
+        }
+        return $query;
+    } 
+
     /**
      * @param QueryInterface $query
      * @param bool           $resetPlaceholders
