@@ -156,29 +156,62 @@ class ColumnWriter
         # TODO: 🚀 ⚠️
         # TRAZAR CON MAS CALMA COMO FUNCIONA
         # PARA ELIMINAR TODO ESTE BLOQUE DE CODIGO PROBABLEMENTE INNECESARIO
-        $name = $this->writer->writeColumnName($column);
-        if ($name === Column::ALL) {
+        $column_name = $this->writer->writeColumnName($column);
+        # Verifica si la columna es un *
+        if ($column_name === Column::ALL) {
             return $this->writer->writeColumnAll();
         }
-        $function = substr($name, 0, strpos($name, '('));
-        $name = str_replace($function . '(', "", $name);
-        $name = str_replace(')', "", $name);
-        $name = str_replace("`", "", $name);
-        $name = explode(".", $name);
+        # Este regex ayuda a identificar si hay alguna funcion en la columna
+        # asegurate de que si cambias el nombre del grupo de name a otra cosa
+        # se cambie en donde corresponda
+        $function_regex = '/(?<name>\w+)\s*\(\s*/';
+        # Se verifica de esta forma de primera instancia ya que 
+        # si se usa preg_match_all y despues un count
+        # al contar contaria matches vacios o.O
+        $function_exist = \preg_match($function_regex, $column_name);
+        # Simple inicialización
+        $function_name = "";
+    
+        if($function_exist) {
+            $function_matches = [];
+            \preg_match_all($function_regex, $column_name, $function_matches);
+            $function_count = \count($function_matches);
+            # Verificando si se utilizo mas de una funcion
+            # dado que $column_name contiene el valor correspondiente
+            # se envia por asi decirlo el texto en RAW
+            if($function_count > 1) {
+                return $column_name;
+            # En este caso solo se estaria usando una funcion
+            # se remplaza los parentesis para despues 
+            } else if($function_count == 1) {
+                $function_name = $function_matches["name"][0];
+                $column_name = \str_replace($function_name, "", $column_name);
+                $column_name = \ltrim($column_name, "(");
+                $column_name = \rtrim($column_name, ")");
+            }
+        }
+        # FIX alias erroneos...
+        # se remplazan todas las comills inglesas
+        $column_name = \str_replace("`", "", $column_name);
+        # se delimita codigo
+        $column_name = explode(".", $column_name);
+        # Se verifica si es una columna de alias
         $is_alias = $column->isAlias();
         if($is_alias) {
-            array_walk($name, function (&$column) {
+            \array_walk($column_name, function (&$column) {
                 $column = "'{$column}'";
             });
         } else {
-            array_walk($name, function (&$column) {
+            \array_walk($column_name, function (&$column) {
                 $column = "`{$column}`";
             });
         }
-        $name = implode(".", $name);
-        if($function) {
-            return "{$function}({$name})";
+        # Convirtiendo arreglo a string
+        $column_name = \implode(".", $column_name);
+        # Verificando si hay una funcion
+        if($function_exist) {
+            return "{$function_name}({$column_name})";
         }
-        return $name;
+        return $column_name;
     }
 }
