@@ -118,7 +118,7 @@ class JoinQuery
             $this->addJoin($select, $selfColumn, $refColumn);
         }
 
-        return $this->joins[ $table_name ];
+        return $this->select;
     }
 
     /**
@@ -152,7 +152,7 @@ class JoinQuery
             $this->joins[ $table_name ] = $select;
         }
 
-        return $this->joins[ $table_name ];
+        return $this->select;
     }
 
     /**
