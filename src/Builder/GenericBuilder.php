@@ -205,7 +205,7 @@ class GenericBuilder implements BuilderInterface
         return $this->sqlFormatter->format($this->write($query));
     }
 
-    public function writeFormattedWithValues(QueryInterface $query)
+    public function writeFormattedWithValues(QueryInterface $query) : string
     {
         $query = $this->writeFormatted($query);
         $params = $this->getValues();

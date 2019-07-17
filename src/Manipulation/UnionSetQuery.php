@@ -50,7 +50,7 @@ abstract class UnionSetQuery extends AbstractSetQuery
     public function __toString()
     {
         try {
-            return $this->builder->write($this);
+            return $this->builder->writeFormattedWithValues($this);
         } catch (\Exception $e) {
             return \sprintf('[%s] %s', \get_class($e), $e->getMessage());
         }

@@ -116,7 +116,7 @@ abstract class AbstractBaseQuery implements QueryInterface, QueryPartInterface
     public function __toString()
     {
         try {
-            return $this->getSql();
+            return $this->getBuilder()->writeFormattedWithValues($this);
         } catch (\Exception $e) {
             return \sprintf('[%s] %s', \get_class($e), $e->getMessage());
         }
