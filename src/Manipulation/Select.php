@@ -217,7 +217,7 @@ class Select extends AbstractBaseQuery
      */
     public function on()
     {
-        return $this->joinQuery->joinCondition();
+        return $this->joinQuery->on();
     }
 
     /**

@@ -37,6 +37,14 @@ class JoinQuery
     protected $isJoin = false;
 
     /**
+     * Se guarda el ultimo join añadido,
+     * dado que regresar el $select da problemas al utilizar on()
+     *
+     * @var Select
+     */
+    protected $last_join = null;
+
+    /**
      * @var string
      */
     protected $joinType;
@@ -151,6 +159,8 @@ class JoinQuery
             $select->joinCondition()->equals($refColumn, $selfColumn);
             $this->joins[ $table_name ] = $select;
         }
+        
+        $this->last_join = $this->joins[ $table_name ];
 
         return $this->select;
     }
@@ -217,6 +227,9 @@ class JoinQuery
      */
     public function on()
     {
+        if(is_object($this->last_join) && method_exists($this->last_join, "joinCondition")) {
+            return $this->last_join->joinCondition();
+        }
         return $this->joinCondition();
     }
 
