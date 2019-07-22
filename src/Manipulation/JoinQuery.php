@@ -156,7 +156,10 @@ class JoinQuery
                 );
             }
 
-            $select->joinCondition()->equals($refColumn, $selfColumn);
+            if($selfColumn && $refColumn) {
+                $select->joinCondition()->equals($refColumn, $selfColumn);
+            }
+
             $this->joins[ $table_name ] = $select;
         }
         
