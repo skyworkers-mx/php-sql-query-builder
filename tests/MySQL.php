@@ -1,62 +1,66 @@
 <?php
 
-	use PHPUnit\Framework\TestCase;
-	use NilPortugues\Sql\QueryBuilder\Builder\MySqlBuilder;
+use PHPUnit\Framework\TestCase;
+use NilPortugues\Sql\QueryBuilder\Builder\MySqlBuilder;
+
+/**
+ * Class MySQL ./bin/phpunit --bootstrap vendor/autoload.php tests/MySQL
+ */
+class MySQL extends TestCase
+{
 	/**
-	 * Class Skynet
-	 */
-	class Skynet extends TestCase {
+	* @test
+	*/
+	public function queryUnion()
+	{
 
-		/**
-		 * @var MySqlBuilder
-		 */
-		protected $builder;
+		$builder = new MySqlBuilder();
+		$union = $builder->unionAll();
 
-		// public function test() {
-
-			// $builder = new MySqlBuilder();
-			// $query = $builder->select()
-			// 	->setTable('user');
-
-			// $query->setColumns([
-			// 			'userId'   => 'user.user_id',
-			// 			'username' => 'user.name',
-			// 			'email'    => 'user.email',
-			// 			'user.created_at'
-			// 	])
-			// 	->orderBy('user_id')
-			// 	->leftJoin(
-			// 		'news', //join table
-			// 		'user.user_id', //origin table field used to join
-			// 		'news.author_id' //join column
-			// 	)
-			// 	->on()
-			// 	->equals('news.author_id', 1); //enforcing a condition on the join column
-
-			// $query
-			// 	->where()
-			// 	->greaterThan('user.user_id', 5)
-			// 	->notLike('user.username', 'John')
-			// 	->end();
-
-			// $query
-			// 	->orderBy('created_at');
+		$q1 = $builder->select();
+		$q1->setTable(["U" => "users"]);
 
 
-		// }
+		$q2 = $builder->select();
+		$q2->setTable("users");
 
+		$union->add($q1)->add($q2);
+		$union->orderBy("id", "ASC");
+		$union->limit(5, 10);
 
-		/**
-		 * @test
-		 */
-		public function test2()
-		{
-
-			$builder = new MySqlBuilder();
-			$query = $builder->select();
-
-
-
-			echo $builder->writeFormatted($query); 
-		}
+		echo $union;
 	}
+
+	/**
+	* @test
+	*/
+	public function queryDinamyc()
+	{
+
+		$builder = new MySqlBuilder();
+
+		$q1 = $builder->select();
+		
+		$q1->setTable(["U" => "users"]);
+
+		$q1
+			->innerJoin(["A" => "a_test1"], "A.id", "U.test_id")
+			->rightJoin(["B" => "b_utest2"], "B.id", "U.test_id")
+		
+		;
+		
+		$q1
+			->leftJoin(["C" => "c_test3"], "C.id", "U.test_id")
+			->rightJoin(["D" => "d_test4"], "D.id", "U.test_id")
+			->innerJoin(["F" => "f_test5"], "F.id", "U.test_id")
+				->on()
+					->equals("F.status", 1)
+				->end()
+			->innerJoin(["G" => "g_test6"], "F.id", "U.test_id")
+		;
+
+		$q1->groupBy(["F.id"]);
+
+		echo $q1;
+	}
+}
