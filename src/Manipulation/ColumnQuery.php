@@ -138,7 +138,7 @@ class ColumnQuery
     {
         $this->columnSelects[] = $column;
 
-        return $this;
+        return $this->select;
     }
 
     /**
@@ -161,7 +161,7 @@ class ColumnQuery
     {
         $this->columnValues[$alias] = $value;
 
-        return $this;
+        return $this->select;
     }
 
     /**
@@ -185,7 +185,7 @@ class ColumnQuery
     {
         $this->columnFuncs[$alias] = ['func' => $funcName, 'args' => $arguments];
 
-        return $this;
+        return $this->select;
     }
 
     /**
@@ -217,7 +217,7 @@ class ColumnQuery
         $this->columns = array($count);
         $this->isCount = true;
 
-        return $this;
+        return $this->select;
     }
 
     /**
@@ -269,7 +269,7 @@ class ColumnQuery
     {
         $this->columns = $columns;
 
-        return $this;
+        return $this->select;
     }
 
     public function addColumn($column) {
@@ -278,13 +278,13 @@ class ColumnQuery
         } else {
             \array_push($this->columns, $column);
         }
-        return $this;
+        return $this->select;
     }
 
     public function addColumns(array $columns)
     {
         $this->columns = array_merge($this->columns, $columns);
-        return $this;
+        return $this->select;
     }
 
     public function removeColumn( $search) {
@@ -299,6 +299,6 @@ class ColumnQuery
             }
             $position++;
         }
-        return $this;
+        return $this->select;
     }
 }
