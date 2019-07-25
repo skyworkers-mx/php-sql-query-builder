@@ -71,6 +71,12 @@ class Select extends AbstractBaseQuery
     protected $parentQuery;
 
     /**
+     * Identifier for query cache
+     * @var string
+     */
+    protected $id = '';
+
+    /**
      * @param string $table
      * @param array  $columns
      */
@@ -82,6 +88,25 @@ class Select extends AbstractBaseQuery
 
         $this->joinQuery = new JoinQuery($this);
         $this->columnQuery = new ColumnQuery($this, $this->joinQuery, $columns);
+    }
+
+    /**
+     * Define an id
+     * 
+     * this can be used for example when you want to store this with MemCache/MemCached and you need a unique key
+     *
+     * @param string $id
+     * @return void
+     */
+    public function setId(string $id): Select
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
     }
 
     /**
