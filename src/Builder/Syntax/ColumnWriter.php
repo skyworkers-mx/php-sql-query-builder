@@ -203,7 +203,9 @@ class ColumnWriter
             });
         } else {
             \array_walk($column_name, function (&$column) {
-                $column = "`{$column}`";
+                if (!is_numeric($column)){
+                    $column = "`{$column}`";
+                }
             });
         }
         # Convirtiendo arreglo a string
