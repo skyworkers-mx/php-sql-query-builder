@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Author: Nil Portugués Calderó <contact@nilportugues.com>
  * Date: 12/24/14
@@ -13,7 +14,7 @@ namespace NilPortugues\Sql\QueryBuilder\Manipulation;
 /**
  * Class AbstractCreationalQuery.
  */
-abstract class AbstractCreationalQuery extends AbstractBaseQuery
+abstract class AbstractCreationalQuery extends AbstractJoinQuery
 {
     /**
      * @var array
@@ -26,6 +27,7 @@ abstract class AbstractCreationalQuery extends AbstractBaseQuery
      */
     public function __construct($table = null, array $values = null)
     {
+        parent::__construct();
         if (isset($table)) {
             $this->setTable($table);
         }
@@ -50,7 +52,7 @@ abstract class AbstractCreationalQuery extends AbstractBaseQuery
      */
     public function setValues(array $values)
     {
-        $this->values = \array_filter($values, function($value) {
+        $this->values = \array_filter($values, function ($value) {
             if (is_int($value)) {
                 return true;
             }

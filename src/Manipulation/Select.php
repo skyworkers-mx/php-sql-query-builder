@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Author: Nil Portugués Calderó <contact@nilportugues.com>
  * Date: 6/3/14
@@ -18,7 +19,7 @@ use NilPortugues\Sql\QueryBuilder\Syntax\OrderBy;
 /**
  * Class Select.
  */
-class Select extends AbstractBaseQuery
+class Select extends AbstractJoinQuery
 {
     /**
      * @var Table
@@ -55,20 +56,12 @@ class Select extends AbstractBaseQuery
      */
     protected $where;
 
-    /**
-     * @var JoinQuery
-     */
-    protected $joinQuery;
 
     /**
      * @var ColumnQuery
      */
     protected $columnQuery;
 
-    /**
-     * @var ParentQuery
-     */
-    protected $parentQuery;
 
     /**
      * Identifier for query cache
@@ -82,11 +75,10 @@ class Select extends AbstractBaseQuery
      */
     public function __construct($table = null, array $columns = null)
     {
+        parent::__construct();
         if (isset($table)) {
             $this->setTable($table);
         }
-
-        $this->joinQuery = new JoinQuery($this);
         $this->columnQuery = new ColumnQuery($this, $this->joinQuery, $columns);
     }
 
@@ -129,131 +121,6 @@ class Select extends AbstractBaseQuery
     }
 
     /**
-     * @param string   $table
-     * @param string   $selfColumn
-     * @param string   $refColumn
-     * @param string[] $columns
-     *
-     * @return Select
-     */
-    public function leftJoin($table, $selfColumn = null, $refColumn = null, $columns = [])
-    {
-        return $this->joinQuery->leftJoin($table, $selfColumn, $refColumn, $columns);
-    }
-
-    /**
-     * @param string   $table
-     * @param string   $selfColumn
-     * @param string   $refColumn
-     * @param string[] $columns
-     * @param string   $joinType
-     *
-     * @return Select
-     */
-    public function join(
-        $table,
-        $selfColumn = null,
-        $refColumn = null,
-        $columns = [],
-        $joinType = null
-    ) {
-        return $this->joinQuery->join($table, $selfColumn, $refColumn, $columns, $joinType);
-    }
-
-    /**
-     * WHERE constrains used for the ON clause of a (LEFT/RIGHT/INNER/CROSS) JOIN.
-     *
-     * @return Where
-     */
-    public function joinCondition()
-    {
-        return $this->joinQuery->joinCondition();
-    }
-
-    /**
-     * @param Select $select
-     * @param string $selfColumn
-     * @param string $refColumn
-     *
-     * @return Select
-     */
-    public function addJoin(Select $select, $selfColumn, $refColumn)
-    {
-        return $this->joinQuery->addJoin($select, $selfColumn, $refColumn);
-    }
-
-    /**
-     * Transforms Select in a joint.
-     *
-     * @param bool $isJoin
-     *
-     * @return JoinQuery
-     */
-    public function isJoin($isJoin = true)
-    {
-        return $this->joinQuery->setJoin($isJoin);
-    }
-
-    /**
-     * @param string   $table
-     * @param string   $selfColumn
-     * @param string   $refColumn
-     * @param string[] $columns
-     *
-     * @internal param null $selectClass
-     *
-     * @return Select
-     */
-    public function rightJoin($table, $selfColumn = null, $refColumn = null, $columns = [])
-    {
-        return $this->joinQuery->rightJoin($table, $selfColumn, $refColumn, $columns);
-    }
-
-    /**
-     * @param string   $table
-     * @param string   $selfColumn
-     * @param string   $refColumn
-     * @param string[] $columns
-     *
-     * @return Select
-     */
-    public function crossJoin($table, $selfColumn = null, $refColumn = null, $columns = [])
-    {
-        return $this->joinQuery->crossJoin($table, $selfColumn, $refColumn, $columns);
-    }
-
-    /**
-     * @param string   $table
-     * @param string   $selfColumn
-     * @param string   $refColumn
-     * @param string[] $columns
-     *
-     * @return Select
-     */
-    public function innerJoin($table, $selfColumn = null, $refColumn = null, $columns = [])
-    {
-        return $this->joinQuery->innerJoin($table, $selfColumn, $refColumn, $columns);
-    }
-
-    /**
-     * Alias to joinCondition.
-     *
-     * @return Where
-     */
-    public function on()
-    {
-        return $this->joinQuery->on();
-    }
-
-    /**
-     * @return bool
-     */
-    public function isJoinSelect()
-    {
-        return $this->joinQuery->isJoin();
-    }
-
-    /**
      * @return array
      */
     public function getAllColumns()
@@ -284,18 +151,20 @@ class Select extends AbstractBaseQuery
         return $this->columnQuery->setColumns($columns);
     }
 
-    public function addColumn($column) {
-        return $this->columnQuery->addColumn( $column);
+    public function addColumn($column)
+    {
+        return $this->columnQuery->addColumn($column);
     }
 
-    public function addColumns($columns) {
-        return $this->columnQuery->addColumns( $columns);
+    public function addColumns($columns)
+    {
+        return $this->columnQuery->addColumns($columns);
     }
 
     public function removeColumn($column)
     {
         return $this->columnQuery->removeColumn($column);
-    } 
+    }
 
     /**
      * Allows setting a Select query as a column value.
@@ -371,27 +240,6 @@ class Select extends AbstractBaseQuery
     }
 
     /**
-     * @param null|Where $data
-     * @param string     $operation
-     *
-     * @return array
-     */
-    protected function getAllOperation($data, $operation)
-    {
-        $collection = [];
-
-        if (!is_null($data)) {
-            $collection[] = $data;
-        }
-
-        foreach ($this->joinQuery->getJoins() as $join) {
-            $collection = \array_merge($collection, $join->$operation());
-        }
-
-        return $collection;
-    }
-
-    /**
      * @return array
      */
     public function getAllHavings()
@@ -435,14 +283,6 @@ class Select extends AbstractBaseQuery
     /**
      * @return array
      */
-    public function getAllJoins()
-    {
-        return $this->joinQuery->getAllJoins();
-    }
-
-    /**
-     * @return array
-     */
     public function getGroupBy()
     {
         return SyntaxFactory::createColumns($this->groupBy, $this->getTable());
@@ -466,37 +306,10 @@ class Select extends AbstractBaseQuery
      * @param string $key
      * @return $this
      */
-    public function removeFromGroupBy(string $key) {
-       $key = array_search($key, $this->groupBy);
-       \array_splice($this->groupBy, $key, 1);
-        return $this;
-    }
-
-    /**
-     * @return Where
-     */
-    public function getJoinCondition()
+    public function removeFromGroupBy(string $key)
     {
-        return $this->joinQuery->getJoinCondition();
-    }
-
-    /**
-     * @return string
-     */
-    public function getJoinType()
-    {
-        return $this->joinQuery->getJoinType();
-    }
-
-    /**
-     * @param string|null $joinType
-     *
-     * @return $this
-     */
-    public function setJoinType($joinType)
-    {
-        $this->joinQuery->setJoinType($joinType);
-
+        $key = array_search($key, $this->groupBy);
+        \array_splice($this->groupBy, $key, 1);
         return $this;
     }
 
@@ -515,7 +328,7 @@ class Select extends AbstractBaseQuery
 
         if (!in_array($havingOperator, array(Where::CONJUNCTION_AND, Where::CONJUNCTION_OR))) {
             throw new QueryException(
-                "Invalid conjunction specified, must be one of AND or OR, but '".$havingOperator."' was found."
+                "Invalid conjunction specified, must be one of AND or OR, but '" . $havingOperator . "' was found."
             );
         }
 
@@ -564,18 +377,6 @@ class Select extends AbstractBaseQuery
     public function getParentQuery()
     {
         return $this->parentQuery;
-    }
-
-    /**
-     * @param Select $parentQuery
-     *
-     * @return $this
-     */
-    public function setParentQuery(Select $parentQuery)
-    {
-        $this->parentQuery = $parentQuery;
-
-        return $this;
     }
 
     /**

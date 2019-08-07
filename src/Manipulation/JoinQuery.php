@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Author: Nil Portugués Calderó <contact@nilportugues.com>
  * Date: 12/25/14
@@ -62,7 +63,7 @@ class JoinQuery
     /**
      * @param Select $select
      */
-    public function __construct(Select $select)
+    public function __construct(AbstractJoinQuery $select)
     {
         $this->select = $select;
     }
@@ -110,15 +111,15 @@ class JoinQuery
     ) {
         $table = gettype($table) == "string" ? [$table] : $table;
         $keys = array_keys($table);
-        $instance = $table[ $keys[0] ];
-        
-        if( $instance instanceof Select) {
+        $instance = $table[$keys[0]];
+
+        if ($instance instanceof AbstractJoinQuery) {
             $table_name = $instance->getTable()->getAlias();
         } else {
             $table_name = $keys[0] . "_" . $instance;
         }
 
-        if (!isset($this->joins[ $table_name ])) {
+        if (!isset($this->joins[$table_name])) {
             $select = QueryFactory::createSelect($table);
             $select->setColumns($columns);
             $select->setJoinType($joinType);
@@ -136,18 +137,18 @@ class JoinQuery
      *
      * @return Select
      */
-    public function addJoin(Select $select, $selfColumn, $refColumn)
+    public function addJoin(AbstractJoinQuery $select, $selfColumn, $refColumn)
     {
         $select->isJoin(true);
         $instance = $select->getTable()->getName();
 
-        if ($instance instanceof Select) {
+        if ($instance instanceof AbstractJoinQuery) {
             $table_name = $instance->getTable()->getAlias();
         } else {
             $table_name = $select->getTable()->getAlias() . "_" . $instance;
         }
 
-        if (!isset($this->joins[ $table_name ])) {
+        if (!isset($this->joins[$table_name])) {
             if (!$selfColumn instanceof Column) {
                 $newColumn = array($selfColumn);
                 $selfColumn = SyntaxFactory::createColumn(
@@ -156,14 +157,14 @@ class JoinQuery
                 );
             }
 
-            if($selfColumn && $refColumn) {
+            if ($selfColumn && $refColumn) {
                 $select->joinCondition()->equals($refColumn, $selfColumn);
             }
 
-            $this->joins[ $table_name ] = $select;
+            $this->joins[$table_name] = $select;
         }
-        
-        $this->last_join = $this->joins[ $table_name ];
+
+        $this->last_join = $this->joins[$table_name];
 
         return $this->select;
     }
@@ -230,7 +231,7 @@ class JoinQuery
      */
     public function on()
     {
-        if(is_object($this->last_join) && method_exists($this->last_join, "joinCondition")) {
+        if (is_object($this->last_join) && method_exists($this->last_join, "joinCondition")) {
             return $this->last_join->joinCondition();
         }
         return $this->joinCondition();

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Author: Nil Portugués Calderó <contact@nilportugues.com>
  * Date: 6/11/14
@@ -34,7 +35,9 @@ class UpdateWriter extends AbstractBaseWriter
         }
 
         $parts = array(
-            'UPDATE '.$this->writer->writeTable($update->getTable()).' SET ',
+            'UPDATE ' .
+                $this->writer->writeTableWithAlias($update->getTable()) .
+                $this->writeSelectAggrupation($update, $this->writer, 'getAllJoins', 'writeJoin', ' ') . ' SET ',
             $this->writeUpdateValues($update),
         );
 
@@ -42,7 +45,36 @@ class UpdateWriter extends AbstractBaseWriter
         AbstractBaseWriter::writeLimitCondition($update, $this->placeholderWriter, $parts);
         $comment = AbstractBaseWriter::writeQueryComment($update);
 
-        return $comment.implode(' ', $parts);
+        return $comment . implode(' ', $parts);
+    }
+
+    /**
+     * @param Select $select
+     * @param        $writer
+     * @param string $getMethod
+     * @param string $writeMethod
+     * @param string $glue
+     * @param string $prepend
+     *
+     * @return string
+     */
+    protected function writeSelectAggrupation($select, $writer, $getMethod, $writeMethod, $glue, $prepend = '')
+    {
+        $str = '';
+        $joins = $select->$getMethod();
+
+        if (!empty($joins)) {
+            \array_walk(
+                $joins,
+                function (&$join) use ($writer, $writeMethod) {
+                    $join = $writer->$writeMethod($join);
+                }
+            );
+
+            $str = $prepend . implode($glue, $joins);
+        }
+
+        return $str;
     }
 
     /**

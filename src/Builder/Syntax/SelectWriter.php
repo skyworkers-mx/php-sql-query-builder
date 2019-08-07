@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Author: Nil Portugués Calderó <contact@nilportugues.com>
  * Date: 6/11/14
@@ -32,7 +33,7 @@ class SelectWriter extends AbstractBaseWriter
         $selectAsColumn = $this->write($select);
 
         if (!empty($selectAsColumn)) {
-            $selectAsColumn = '('.$selectAsColumn.')';
+            $selectAsColumn = '(' . $selectAsColumn . ')';
         }
 
         $column = array($alias => $selectAsColumn);
@@ -45,7 +46,7 @@ class SelectWriter extends AbstractBaseWriter
      *
      * @return string
      */
-    public function write(Select $select)
+    public function write($select)
     {
         if ($select->isJoinSelect()) {
             return $this->writer->writeJoin($select);
@@ -59,7 +60,7 @@ class SelectWriter extends AbstractBaseWriter
      *
      * @return string
      */
-    protected function writeSelectQuery(Select $select)
+    protected function writeSelectQuery($select)
     {
         $parts = ['SELECT'];
 
@@ -76,7 +77,7 @@ class SelectWriter extends AbstractBaseWriter
         $this->writeSelectOrderBy($select, $parts);
         $this->writeSelectLimit($select, $parts);
 
-        return AbstractBaseWriter::writeQueryComment($select).implode(' ', \array_filter($parts));
+        return AbstractBaseWriter::writeQueryComment($select) . implode(' ', \array_filter($parts));
     }
 
     /**
@@ -137,11 +138,11 @@ class SelectWriter extends AbstractBaseWriter
      *
      * @return $this
      */
-    public function writeSelectFrom(Select $select, array &$parts)
+    public function writeSelectFrom($select, array &$parts)
     {
         $parts = \array_merge(
             $parts,
-            ['FROM '.$this->writer->writeTableWithAlias($select->getTable())]
+            ['FROM ' . $this->writer->writeTableWithAlias($select->getTable())]
         );
 
         return $this;
@@ -186,7 +187,7 @@ class SelectWriter extends AbstractBaseWriter
                 }
             );
 
-            $str = $prepend.implode($glue, $joins);
+            $str = $prepend . implode($glue, $joins);
         }
 
         return $str;
@@ -206,7 +207,7 @@ class SelectWriter extends AbstractBaseWriter
 
         if (\count($wheres) > 0) {
             $str = 'WHERE ';
-            $separator = ' '.$this->writer->writeConjunction($select->getWhereOperator()).' ';
+            $separator = ' ' . $this->writer->writeConjunction($select->getWhereOperator()) . ' ';
 
             $str .= \implode($separator, $wheres);
         }
@@ -274,7 +275,7 @@ class SelectWriter extends AbstractBaseWriter
             $writer = $this->writer;
 
             $str = 'HAVING ';
-            $separator = ' '.$select->getHavingOperator().' ';
+            $separator = ' ' . $select->getHavingOperator() . ' ';
             $havingArray = $this->getHavingConditions($havingArray, $select, $writer, $placeholder);
 
             $str .= \implode($separator, $havingArray);
@@ -348,7 +349,7 @@ class SelectWriter extends AbstractBaseWriter
     {
         $column = $this->columnWriter->writeColumn($orderBy->getColumn());
 
-        return $column.' '.$orderBy->getDirection();
+        return $column . ' ' . $orderBy->getDirection();
     }
 
     /**
@@ -359,7 +360,7 @@ class SelectWriter extends AbstractBaseWriter
      */
     protected function writeSelectLimit(Select $select, array &$parts)
     {
-        $mask = $this->getStartingLimit($select).$this->getLimitCount($select);
+        $mask = $this->getStartingLimit($select) . $this->getLimitCount($select);
 
         $limit = '';
 
