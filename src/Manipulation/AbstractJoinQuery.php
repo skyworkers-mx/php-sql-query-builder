@@ -89,9 +89,9 @@ class AbstractJoinQuery extends AbstractBaseQuery
      *
      * @return Where
      */
-    public function on()
+    public function on(string $conjunction = '')
     {
-        return $this->joinQuery->on();
+        return $this->joinQuery->on($conjunction);
     }
 
     /**

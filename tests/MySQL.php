@@ -53,7 +53,7 @@ class MySQL extends TestCase
 			->leftJoin(["C" => "c_test3"], "C.id", "U.test_id")
 			->rightJoin(["D" => "d_test4"], "D.id", "U.test_id")
 			->innerJoin(["F" => "f_test5"], "F.id", "U.test_id")
-			->on()
+			->on('OR')
 			->equals("F.status", 1)
 			->end()
 			->innerJoin(["G" => "g_test6"], "F.id", "U.test_id");

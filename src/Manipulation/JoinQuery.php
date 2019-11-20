@@ -229,12 +229,17 @@ class JoinQuery
      *
      * @return Where
      */
-    public function on()
+    public function on(string $conjunction = '')
     {
         if (is_object($this->last_join) && method_exists($this->last_join, "joinCondition")) {
-            return $this->last_join->joinCondition();
+            $where_instancie = $this->last_join->joinCondition();
+        } else {
+            $where_instancie = $this->joinCondition();
         }
-        return $this->joinCondition();
+        if (strtoupper($conjunction) == Where::CONJUNCTION_OR) {
+            $where_instancie->conjunction(Where::CONJUNCTION_OR);
+        }
+        return $where_instancie;
     }
 
     /**
