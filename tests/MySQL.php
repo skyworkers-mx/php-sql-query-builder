@@ -97,4 +97,28 @@ class MySQL extends TestCase
 			->innerJoin(["B" => $q1], "B.id_test_a", "A.id");
 		echo $q2;
 	}
+
+	/**
+	 * @test
+	 */
+	public function queryInsert() {
+		$builder = new MySqlBuilder();
+		$query = $builder->insert()
+			->setTable('AUTOMOVILES')
+			->setValues([
+				'marca' => 'Mitsubishi',
+				'modelo' => 'Lancer',
+				'año' => '2012',
+				'version' => 'DE',
+				'motor' => '2.0',
+				'trasmision' => 'Manual',
+				'color' => 'Rojo Rubi',
+				'Detalles' => '',
+			]);
+		$sql = $builder->writeFormatted($query);    
+		$values = $builder->getValues();
+		echo $query;
+		echo $sql;
+		var_dump($values);
+	}
 }
