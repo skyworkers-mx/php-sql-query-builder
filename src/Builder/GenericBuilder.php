@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Author: Nil Portugués Calderó <contact@nilportugues.com>
  * Date: 6/3/14
@@ -99,7 +100,7 @@ class GenericBuilder implements BuilderInterface
      *
      * @return \NilPortugues\Sql\QueryBuilder\Manipulation\Select
      */
-    public function select($table = null, array $columns = null)
+    public function select($table = null, array $columns = null): \NilPortugues\Sql\QueryBuilder\Manipulation\Select
     {
         return $this->injectBuilder(QueryFactory::createSelect($table, $columns));
     }
@@ -120,7 +121,7 @@ class GenericBuilder implements BuilderInterface
      *
      *@return AbstractBaseQuery
      */
-    public function insert($table = null, array $values = null)
+    public function insert($table = null, array $values = null): \NilPortugues\Sql\QueryBuilder\Manipulation\Insert
     {
         return $this->injectBuilder(QueryFactory::createInsert($table, $values));
     }
@@ -131,7 +132,7 @@ class GenericBuilder implements BuilderInterface
      *
      *@return AbstractBaseQuery
      */
-    public function update($table = null, array $values = null)
+    public function update($table = null, array $values = null): \NilPortugues\Sql\QueryBuilder\Manipulation\Update
     {
         return $this->injectBuilder(QueryFactory::createUpdate($table, $values));
     }
@@ -141,7 +142,7 @@ class GenericBuilder implements BuilderInterface
      *
      * @return \NilPortugues\Sql\QueryBuilder\Manipulation\Delete
      */
-    public function delete($table = null)
+    public function delete($table = null): \NilPortugues\Sql\QueryBuilder\Manipulation\Delete
     {
         return $this->injectBuilder(QueryFactory::createDelete($table));
     }
@@ -149,7 +150,7 @@ class GenericBuilder implements BuilderInterface
     /**
      * @return \NilPortugues\Sql\QueryBuilder\Manipulation\Intersect
      */
-    public function intersect()
+    public function intersect(): \NilPortugues\Sql\QueryBuilder\Manipulation\Intersect
     {
         return QueryFactory::createIntersect();
     }
@@ -157,7 +158,7 @@ class GenericBuilder implements BuilderInterface
     /**
      * @return \NilPortugues\Sql\QueryBuilder\Manipulation\Union
      */
-    public function union()
+    public function union(): \NilPortugues\Sql\QueryBuilder\Manipulation\Union
     {
         return QueryFactory::createUnion($this);
     }
@@ -165,7 +166,7 @@ class GenericBuilder implements BuilderInterface
     /**
      * @return \NilPortugues\Sql\QueryBuilder\Manipulation\UnionAll
      */
-    public function unionAll()
+    public function unionAll(): \NilPortugues\Sql\QueryBuilder\Manipulation\UnionAll
     {
         return QueryFactory::createUnionAll($this);
     }
@@ -176,7 +177,7 @@ class GenericBuilder implements BuilderInterface
      *
      * @return \NilPortugues\Sql\QueryBuilder\Manipulation\Minus
      */
-    public function minus(Select $first, Select $second)
+    public function minus(Select $first, Select $second): \NilPortugues\Sql\QueryBuilder\Manipulation\Minus
     {
         return QueryFactory::createMinus($first, $second);
     }
@@ -205,26 +206,27 @@ class GenericBuilder implements BuilderInterface
         return $this->sqlFormatter->format($this->write($query));
     }
 
-    public function writeFormattedWithValues(QueryInterface $query) : string
+    public function writeFormattedWithValues(QueryInterface $query): string
     {
         $query = $this->writeFormatted($query);
         $params = $this->getValues();
         # Verifica si existen parametros
-        if(count($params) > 0) {
-            # Obteniendo llaves
-            $keys = array_keys($params);
-            $regex = '/\:v[0-9]+/m';
-            $index = 0;
-            preg_replace_callback($regex, function($match) use (&$query, &$index, $params, $keys) {
-                $replace = $match[0] ?? "";
-                if($replace != "") {
-                    $query = str_replace($replace, $params[$keys[$index]], $query);
-                    $index++;
-                }
-            }, $query);
-        }
+        if (count($params) == 0) return $query;
+        # Obteniendo llaves
+        $keys = array_keys($params);
+        $regex = '/\:v[0-9]+/';
+        $index = 0;
+        preg_replace_callback($regex, function ($match) use (&$query, &$index, $params, $keys) {
+            $replace = $match[0] ?? "";
+            if ($replace != "") {
+                $value = $params[$keys[$index]];
+                if (gettype($value) == "string") $value = "'$value'";
+                $query = str_replace($replace, $value, $query);
+                $index++;
+            }
+        }, $query);
         return $query;
-    } 
+    }
 
     /**
      * @param QueryInterface $query
@@ -264,7 +266,7 @@ class GenericBuilder implements BuilderInterface
 
         $sql = ($select->getJoinType()) ? "{$select->getJoinType()} " : '';
         $sql .= 'JOIN ';
-        $sql .= $this->writeTableWithAlias($select->getTable());
+        $sql .= $this->writeTableWithAlias($select->getTable(), $select->getPartitions());
         $sql .= ' ON ';
         $sql .= $this->whereWriter->writeWhere($select->getJoinCondition());
 
@@ -276,12 +278,13 @@ class GenericBuilder implements BuilderInterface
      *
      * @return string
      */
-    public function writeTableWithAlias(Table $table)
+    public function writeTableWithAlias(Table $table, array $partitions = null)
     {
-        $alias = ($table->getAlias()) ? " AS {$this->writeTableAlias($table->getAlias())}" : '';
+        $partitions = is_array($partitions) && count($partitions) ? 'PARTITION(' . implode(',', $partitions) . ')' : "";
+        $alias = ($table->getAlias()) ? " $partitions AS {$this->writeTableAlias($table->getAlias())}" : '';
         $schema = ($table->getSchema()) ? "{$table->getSchema()}." : '';
 
-        return $schema.$this->writeTableName($table).$alias;
+        return $schema . $this->writeTableName($table) . $alias;
     }
 
     /**
@@ -325,7 +328,7 @@ class GenericBuilder implements BuilderInterface
     {
         $schema = ($table->getSchema()) ? "{$table->getSchema()}." : '';
 
-        return $schema.$this->writeTableName($table);
+        return $schema . $this->writeTableName($table);
     }
 
     /**
@@ -362,7 +365,7 @@ class GenericBuilder implements BuilderInterface
      */
     public function writeConjunction($operator)
     {
-        return ' '.$operator.' ';
+        return ' ' . $operator . ' ';
     }
 
     /**

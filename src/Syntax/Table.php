@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Author: Nil Portugués Calderó <contact@nilportugues.com>
  * Date: 6/3/14
@@ -34,6 +35,8 @@ class Table
      * @var bool
      */
     protected $view = false;
+
+    private $partitions = [];
 
     /**
      * @param        $name
@@ -100,7 +103,7 @@ class Table
         $alias = ($this->alias) ? " AS {$this->alias}" : '';
         $schema = ($this->schema) ? "{$this->schema}." : '';
 
-        return $schema.$this->name.$alias;
+        return $schema . $this->name . $alias;
     }
 
     /**
@@ -135,4 +138,6 @@ class Table
 
         return $this;
     }
+
+
 }

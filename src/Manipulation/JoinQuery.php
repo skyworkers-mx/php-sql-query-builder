@@ -88,9 +88,9 @@ class JoinQuery
      *
      * @return Select
      */
-    public function leftJoin($table, $selfColumn = null, $refColumn = null, $columns = [])
+    public function leftJoin($table, $selfColumn = null, $refColumn = null, $partitions = null)
     {
-        return $this->join($table, $selfColumn, $refColumn, $columns, self::JOIN_LEFT);
+        return $this->join($table, $selfColumn, $refColumn, $partitions, self::JOIN_LEFT);
     }
 
     /**
@@ -106,7 +106,7 @@ class JoinQuery
         $table,
         $selfColumn = null,
         $refColumn = null,
-        $columns = [],
+        $partitions = null,
         $joinType = null
     ) {
         $table = gettype($table) == "string" ? [$table] : $table;
@@ -121,7 +121,8 @@ class JoinQuery
 
         if (!isset($this->joins[$table_name])) {
             $select = QueryFactory::createSelect($table);
-            $select->setColumns($columns);
+            $select->setColumns([]);
+            $select->setPartitions($partitions);
             $select->setJoinType($joinType);
             $select->setParentQuery($this->select);
             $this->addJoin($select, $selfColumn, $refColumn);
@@ -193,9 +194,9 @@ class JoinQuery
      *
      * @return Select
      */
-    public function rightJoin($table, $selfColumn = null, $refColumn = null, $columns = [])
+    public function rightJoin($table, $selfColumn = null, $refColumn = null, $partitions = null)
     {
-        return $this->join($table, $selfColumn, $refColumn, $columns, self::JOIN_RIGHT);
+        return $this->join($table, $selfColumn, $refColumn, $partitions, self::JOIN_RIGHT);
     }
 
     /**
@@ -206,9 +207,9 @@ class JoinQuery
      *
      * @return Select
      */
-    public function crossJoin($table, $selfColumn = null, $refColumn = null, $columns = [])
+    public function crossJoin($table, $selfColumn = null, $refColumn = null, $partitions = null)
     {
-        return $this->join($table, $selfColumn, $refColumn, $columns, self::JOIN_CROSS);
+        return $this->join($table, $selfColumn, $refColumn, $partitions, self::JOIN_CROSS);
     }
 
     /**
@@ -219,9 +220,9 @@ class JoinQuery
      *
      * @return Select
      */
-    public function innerJoin($table, $selfColumn = null, $refColumn = null, $columns = [])
+    public function innerJoin($table, $selfColumn = null, $refColumn = null, $partitions = null)
     {
-        return $this->join($table, $selfColumn, $refColumn, $columns, self::JOIN_INNER);
+        return $this->join($table, $selfColumn, $refColumn, $partitions, self::JOIN_INNER);
     }
 
     /**

@@ -142,7 +142,7 @@ class SelectWriter extends AbstractBaseWriter
     {
         $parts = \array_merge(
             $parts,
-            ['FROM ' . $this->writer->writeTableWithAlias($select->getTable())]
+            ['FROM ' . $this->writer->writeTableWithAlias($select->getTable(), $select->getPartitions())]
         );
 
         return $this;

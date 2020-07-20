@@ -11,6 +11,8 @@
 
 namespace NilPortugues\Sql\QueryBuilder\Manipulation;
 
+use NilPortugues\Sql\QueryBuilder\Syntax\Where;
+
 /**
  * Class Update.
  */
@@ -51,9 +53,9 @@ class AbstractJoinQuery extends AbstractBaseQuery
      *
      * @return Select
      */
-    public function leftJoin($table, $selfColumn = null, $refColumn = null, $columns = [])
+    public function leftJoin($table, $selfColumn = null, $refColumn = null, $partitions = null)
     {
-        return $this->joinQuery->leftJoin($table, $selfColumn, $refColumn, $columns);
+        return $this->joinQuery->leftJoin($table, $selfColumn, $refColumn, $partitions);
     }
 
     /**
@@ -66,9 +68,9 @@ class AbstractJoinQuery extends AbstractBaseQuery
      *
      * @return Select
      */
-    public function rightJoin($table, $selfColumn = null, $refColumn = null, $columns = [])
+    public function rightJoin($table, $selfColumn = null, $refColumn = null, $partitions = null)
     {
-        return $this->joinQuery->rightJoin($table, $selfColumn, $refColumn, $columns);
+        return $this->joinQuery->rightJoin($table, $selfColumn, $refColumn, $partitions);
     }
 
     /**
@@ -79,9 +81,9 @@ class AbstractJoinQuery extends AbstractBaseQuery
      *
      * @return Select
      */
-    public function innerJoin($table, $selfColumn = null, $refColumn = null, $columns = [])
+    public function innerJoin($table, $selfColumn = null, $refColumn = null, $partitions = null)
     {
-        return $this->joinQuery->innerJoin($table, $selfColumn, $refColumn, $columns);
+        return $this->joinQuery->innerJoin($table, $selfColumn, $refColumn, $partitions);
     }
 
     /**
@@ -175,9 +177,9 @@ class AbstractJoinQuery extends AbstractBaseQuery
      *
      * @return Select
      */
-    public function crossJoin($table, $selfColumn = null, $refColumn = null, $columns = [])
+    public function crossJoin($table, $selfColumn = null, $refColumn = null, $partitions = null)
     {
-        return $this->joinQuery->crossJoin($table, $selfColumn, $refColumn, $columns);
+        return $this->joinQuery->crossJoin($table, $selfColumn, $refColumn, $partitions);
     }
 
     /**
@@ -212,7 +214,7 @@ class AbstractJoinQuery extends AbstractBaseQuery
     /**
      * @return Where
      */
-    public function getJoinCondition()
+    public function getJoinCondition(): Where
     {
         return $this->joinQuery->getJoinCondition();
     }

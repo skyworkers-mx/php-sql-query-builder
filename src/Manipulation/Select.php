@@ -69,6 +69,8 @@ class Select extends AbstractJoinQuery
      */
     protected $id = '';
 
+    protected $partitions = [];
+
     /**
      * @param string $table
      * @param array  $columns
@@ -80,6 +82,15 @@ class Select extends AbstractJoinQuery
             $this->setTable($table);
         }
         $this->columnQuery = new ColumnQuery($this, $this->joinQuery, $columns);
+    }
+
+    public function setTable($table, $partitions = null): Select
+    {
+        parent::setTable($table);
+
+        $this->setPartitions($partitions);
+
+        return $this;
     }
 
     /**
@@ -149,6 +160,25 @@ class Select extends AbstractJoinQuery
     public function setColumns(array $columns)
     {
         return $this->columnQuery->setColumns($columns);
+    }
+
+
+    public function setPartitions($partitions = null)
+    {
+        if (is_callable($partitions)) {
+            $partitions = $partitions();
+        }
+
+        if (is_array($partitions)) {
+            $this->partitions = $partitions;
+        }
+
+        return $this;
+    }
+
+    public function getPartitions(): array
+    {
+        return $this->partitions;
     }
 
     public function addColumn($column)

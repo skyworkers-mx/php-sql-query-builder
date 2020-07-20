@@ -1,4 +1,7 @@
 <?php
+
+namespace NilPortugues\Sql\QueryBuilder\Manipulation;
+
 /**
  * Author: Nil Portugués Calderó <contact@nilportugues.com>
  * Date: 12/25/14
@@ -7,8 +10,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
-namespace NilPortugues\Sql\QueryBuilder\Manipulation;
 
 use NilPortugues\Sql\QueryBuilder\Syntax\Column;
 use NilPortugues\Sql\QueryBuilder\Syntax\OrderBy;
@@ -53,6 +54,8 @@ class ColumnQuery
      * @var JoinQuery
      */
     protected $joinQuery;
+
+    protected $partitions = [];
 
     /**
      * @param Select    $select
@@ -124,7 +127,7 @@ class ColumnQuery
      */
     public function removeFromGroupBy(string $key)
     {
-        return $this->select->removeFromGroupBy( $key);
+        return $this->select->removeFromGroupBy($key);
     }
 
     /**
@@ -211,7 +214,7 @@ class ColumnQuery
         $count .= ')';
 
         if (isset($alias) && \strlen($alias) > 0) {
-            $count .= ' AS "'.$alias.'"';
+            $count .= ' AS "' . $alias . '"';
         }
 
         $this->columns = array($count);
@@ -248,7 +251,7 @@ class ColumnQuery
      *
      * @throws QueryException
      */
-    public function getColumns() : array
+    public function getColumns(): array
     {
         if (\is_null($this->select->getTable())) {
             throw new QueryException('No table specified for the Select instance');
@@ -272,8 +275,9 @@ class ColumnQuery
         return $this->select;
     }
 
-    public function addColumn($column) {
-        if(gettype($column) == 'array') {
+    public function addColumn($column)
+    {
+        if (gettype($column) == 'array') {
             $this->columns = array_merge($this->columns, $column);
         } else {
             \array_push($this->columns, $column);
@@ -287,13 +291,14 @@ class ColumnQuery
         return $this->select;
     }
 
-    public function removeColumn( $search) {
+    public function removeColumn($search)
+    {
         $position = 0;
         $keys = array_keys($this->columns);
         $values = array_values($this->columns);
-        foreach($values as $key => $value) {
+        foreach ($values as $key => $value) {
             $index = $keys[$key];
-            if($index === $search || $value === $search) {
+            if ($index === $search || $value === $search) {
                 array_splice($this->columns, $key, 1);
                 break;
             }

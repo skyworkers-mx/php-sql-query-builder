@@ -167,7 +167,7 @@ abstract class AbstractBaseQuery implements QueryInterface, QueryPartInterface
      *
      * @return $this
      */
-    public function setTable($table)
+    public function setTable($table): AbstractBaseQuery
     {
         $this->table = $table;
 
