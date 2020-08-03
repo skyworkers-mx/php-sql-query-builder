@@ -214,8 +214,7 @@ class MySQL extends TestCase
       ->setTable(["A" => "table"], ["pa1", "pa2"])
       ->innerJoin(["B" => "table2"], "B.id", "A.id_b", fn () => ["pb1", "pb2", "pb3"])
       ->leftJoin(["C" => "table3"], "C.id", "B.id_c", fn () => ["pc20", "pc30", "pc3"])
-      ->rightJoin(["D" => "table4"], "D.id", "C.id_d", fn () => ["pd100", "pd200", "pd300"])
-      ;
+      ->rightJoin(["D" => "table4"], "D.id", "C.id_d", fn () => ["pd100", "pd200", "pd300"]);
 
     $this->assertEquals(
       $this->queryToOneLine($query),
@@ -225,6 +224,5 @@ class MySQL extends TestCase
           LEFT JOIN `table3` PARTITION(pc20, pc30, pc3) AS `C` ON (`B`.`id_c` = `C`.`id`)
           RIGHT JOIN `table4` PARTITION(pd100, pd200, pd300) AS `D` ON (`C`.`id_d` = `D`.`id`)")
     );
-
   }
 }

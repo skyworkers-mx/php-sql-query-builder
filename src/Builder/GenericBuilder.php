@@ -221,7 +221,7 @@ class GenericBuilder implements BuilderInterface
             if ($replace != "") {
                 $value = $params[$keys[$index]];
                 if (gettype($value) == "string") $value = "'$value'";
-                $query = str_replace($replace, $value, $query);
+                $query = preg_replace("/$replace/", $value, $query, 1);
                 $index++;
             }
         }, $query);

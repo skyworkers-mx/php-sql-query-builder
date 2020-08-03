@@ -84,7 +84,7 @@ class Select extends AbstractJoinQuery
         $this->columnQuery = new ColumnQuery($this, $this->joinQuery, $columns);
     }
 
-    public function setTable($table, $partitions = null): Select
+    public function setTable($table, $partitions = null)
     {
         parent::setTable($table);
 
