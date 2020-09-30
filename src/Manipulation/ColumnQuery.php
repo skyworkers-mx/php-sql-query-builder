@@ -13,7 +13,8 @@ namespace NilPortugues\Sql\QueryBuilder\Manipulation;
 
 use NilPortugues\Sql\QueryBuilder\Syntax\Column;
 use NilPortugues\Sql\QueryBuilder\Syntax\OrderBy;
-use NilPortugues\Sql\QueryBuilder\Syntax\SyntaxFactory;
+
+use NilPortugues\Sql\QueryBuilder\Syntax\Columns\{ColumnAll, ColumnCustom, ColumnStandard, ColumnFunction, ColumnValue};
 
 /**
  * Class ColumnQuery.
@@ -23,22 +24,9 @@ class ColumnQuery
     /**
      * @var array
      */
-    protected $columns = [];
+    protected array $columns = [];
 
-    /**
-     * @var array
-     */
-    protected $columnSelects = [];
-
-    /**
-     * @var array
-     */
-    protected $columnValues = [];
-
-    /**
-     * @var array
-     */
-    protected $columnFuncs = [];
+    protected bool $select_all = false;
 
     /**
      * @var bool
@@ -67,11 +55,7 @@ class ColumnQuery
         $this->select = $select;
         $this->joinQuery = $joinQuery;
 
-        if (!isset($columns)) {
-            $columns = array(Column::ALL);
-        }
-
-        if (\count($columns)) {
+        if (isset($columns) && \count($columns)) {
             $this->setColumns($columns);
         }
     }
@@ -134,22 +118,14 @@ class ColumnQuery
      * Allows setting a Select query as a column value.
      *
      * @param array $column
+     * 
+     * @deprecated
      *
      * @return $this
      */
     public function setSelectAsColumn(array $column)
     {
-        $this->columnSelects[] = $column;
-
-        return $this->select;
-    }
-
-    /**
-     * @return array
-     */
-    public function getColumnSelects()
-    {
-        return $this->columnSelects;
+        throw new QueryException("No se ha creado la refactorización");
     }
 
     /**
@@ -157,26 +133,22 @@ class ColumnQuery
      *
      * @param string $value
      * @param string $alias
+     * 
+     * @deprecated use addColumnValue
      *
      * @return $this
      */
     public function setValueAsColumn($value, $alias)
     {
-        $this->columnValues[$alias] = $value;
-
+        $this->addColumnValue($alias, $value);
         return $this->select;
     }
 
-    /**
-     * @return array
-     */
-    public function getColumnValues()
-    {
-        return $this->columnValues;
-    }
 
     /**
      * Allows calculation on columns using predefined SQL functions.
+     * 
+     * @deprecated usar addColumnFunction
      *
      * @param string   $funcName
      * @param string[] $arguments
@@ -184,20 +156,12 @@ class ColumnQuery
      *
      * @return $this
      */
-    public function setFunctionAsColumn($funcName, array $arguments, $alias)
+    public function setFunctionAsColumn($funcName, array $arguments, $alias): Select
     {
-        $this->columnFuncs[$alias] = ['func' => $funcName, 'args' => $arguments];
-
+        $this->addColumnFunction($alias, $funcName, $arguments);
         return $this->select;
     }
 
-    /**
-     * @return array
-     */
-    public function getColumnFuncs()
-    {
-        return $this->columnFuncs;
-    }
 
     /**
      * @param string $columnName
@@ -205,19 +169,9 @@ class ColumnQuery
      *
      * @return $this
      */
-    public function count($columnName = '*', $alias = '')
+    public function count($columnName = '*', $alias = 'counter')
     {
-        $table = $this->select->getTable();
-
-        $count = 'COUNT(';
-        $count .= ($columnName !== '*') ? "$table.{$columnName}" : '*';
-        $count .= ')';
-
-        if (isset($alias) && \strlen($alias) > 0) {
-            $count .= ' AS "' . $alias . '"';
-        }
-
-        $this->columns = array($count);
+        $this->columns = $this->addColumnFunction($alias, 'COUNT', [$columnName]);
         $this->isCount = true;
 
         return $this->select;
@@ -236,14 +190,7 @@ class ColumnQuery
      */
     public function getAllColumns()
     {
-        $columns = $this->getColumns();
-
-        foreach ($this->joinQuery->getJoins() as $join) {
-            $joinCols = $join->getAllColumns();
-            $columns = \array_merge($columns, $joinCols);
-        }
-
-        return $columns;
+        return $this->columns;
     }
 
     /**
@@ -253,55 +200,106 @@ class ColumnQuery
      */
     public function getColumns(): array
     {
-        if (\is_null($this->select->getTable())) {
-            throw new QueryException('No table specified for the Select instance');
-        }
-
-        return SyntaxFactory::createColumns($this->columns, $this->select->getTable());
+        return $this->columns;
     }
 
     /**
      * Sets the column names used to write the SELECT statement.
      * If key is set, key is the column's alias. Value is always the column names.
+     * 
+     * las columnas añadidas con este metodo pasaran a ser columnas comunes
      *
      * @param array $columns
      *
+     * @deprecated
      * @return $this
      */
     public function setColumns(array $columns)
     {
-        $this->columns = $columns;
-
+        $this->removeDefinedColumns();
+        $this->addColumns($columns);
         return $this->select;
     }
 
-    public function addColumn($column)
+    public function removeDefinedColumns()
     {
-        if (gettype($column) == 'array') {
-            $this->columns = array_merge($this->columns, $column);
+        $this->columns = [];
+        $this->isCount = false;
+        $this->select_all = false;
+        return $this->select;
+    }
+
+    private function pushToColumn($column)
+    {
+        array_push($this->columns, $column);
+        return $this->select;
+    }
+
+    public function selectAll(string $table_alias = "")
+    {
+        if ($table_alias) {
+            if ($this->select_all) {
+                throw new QueryException("Ya has incluido todas las columnas");
+            }
+            $this->pushToColumn(new ColumnAll($table_alias));
         } else {
-            \array_push($this->columns, $column);
+            $this->select_all = true;
+            $this->pushToColumn(new ColumnAll());
         }
         return $this->select;
     }
 
+    public function addColumn(string $column, string $alias = "")
+    {
+        return $this->pushToColumn(new ColumnStandard($column, $alias));
+    }
+
+    public function addColumnFunction(string $alias, string $function, array $arguments)
+    {
+        return $this->pushToColumn(new ColumnFunction($function, $alias, $arguments));
+    }
+
+    public function addColumnValue(string $alias, string $value)
+    {
+        return $this->pushToColumn(new ColumnValue($value, $alias));
+    }
+
+    public function addColumnCustom(string $alias, string $column)
+    {
+        return $this->pushToColumn(new ColumnCustom($alias, $column));
+    }
+
+    /**
+     * Todas las funciones añadidas en este metodo seran tomadas como columnas comunes
+     * @deprecated
+     */
     public function addColumns(array $columns)
     {
-        $this->columns = array_merge($this->columns, $columns);
+        foreach ($columns as $key => $value) {
+            if (is_int($key)) {
+                $this->addColumn($value);
+            } else {
+                $this->addColumn($value, $key);
+            }
+        }
         return $this->select;
     }
 
     public function removeColumn($search)
     {
         $position = 0;
-        $keys = array_keys($this->columns);
-        $values = array_values($this->columns);
-        foreach ($values as $key => $value) {
-            $index = $keys[$key];
-            if ($index === $search || $value === $search) {
-                array_splice($this->columns, $key, 1);
-                break;
+        foreach ($this->columns as $column) {
+            $alias = $column->getAlias();
+            $list = [$alias];
+
+            if ($column instanceof ColumnStandard) {
+                array_push($list, $column->getColumn());
             }
+
+            if (in_array($search, $list)) {
+                array_splice($this->columns, $position, 1);
+            }
+
             $position++;
         }
         return $this->select;

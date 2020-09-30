@@ -16,6 +16,7 @@ use NilPortugues\Sql\QueryBuilder\Manipulation\Select;
 use NilPortugues\Sql\QueryBuilder\Syntax\Column;
 use NilPortugues\Sql\QueryBuilder\Syntax\OrderBy;
 use NilPortugues\Sql\QueryBuilder\Syntax\SyntaxFactory;
+use NilPortugues\Sql\QueryBuilder\Syntax\Columns\{ColumnAll, ColumnCustom, ColumnStandard, ColumnFunction, ColumnValue};
 
 /**
  * Class SelectWriter.
@@ -83,17 +84,13 @@ class SelectWriter extends AbstractBaseWriter
     /**
      * @param Select   $select
      * @param string[] $parts
-     *
      * @return $this
      */
     public function writeSelectColumns(Select $select, array &$parts)
     {
         if ($select->isCount() === false) {
-            $columns = $this->writeColumnAlias(
-                $select->getAllColumns(),
-                $this->columnWriter->writeSelectsAsColumns($select),
-                $this->columnWriter->writeValueAsColumns($select),
-                $this->columnWriter->writeFuncAsColumns($select)
+            $columns = $this->writeColumns(
+                $select->getColumns()
             );
 
             $parts = \array_merge($parts, [implode(', ', $columns)]);
@@ -108,6 +105,38 @@ class SelectWriter extends AbstractBaseWriter
         $parts = \array_merge($parts, [$columnList]);
 
         return $this;
+    }
+
+    public function writeColumns(array $columns): array
+    {
+        $count = count($columns);
+
+        if ($count > 0 && $columns[0] == Column::ALL) {
+            array_shift($columns);
+        } else if ($count == 0) {
+            return [Column::ALL];
+        }
+
+        $data = [];
+
+        foreach ($columns as $col) {
+            $column = "";
+            if ($col instanceof ColumnStandard) {
+                $column = $this->columnWriter->writeColumnStandard($col);
+            } else if ($col instanceof ColumnValue) {
+                $column = $this->columnWriter->writeColumnValue($col);
+            } else if ($col instanceof ColumnFunction) {
+                $column = $this->columnWriter->writeColumnFunction($col);
+            } else if ($col instanceof ColumnAll) {
+                $column = $this->columnWriter->writeColumnAll($col);
+            } else if ($col instanceof ColumnCustom) {
+                $column = $this->columnWriter->writeColumnCustom($col);
+            }
+            array_push($data, $column);
+        }
+
+
+        return $data;
     }
 
     /**

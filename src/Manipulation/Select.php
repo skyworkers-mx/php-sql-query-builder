@@ -93,6 +93,11 @@ class Select extends AbstractJoinQuery
         return $this;
     }
 
+    public function selectAll(string $table_alias = ""): Select
+    {
+        return $this->columnQuery->selectAll($table_alias);
+    }
+
     /**
      * Define an id
      * 
@@ -144,7 +149,7 @@ class Select extends AbstractJoinQuery
      *
      * @throws QueryException
      */
-    public function getColumns()
+    public function getColumns(): array
     {
         return $this->columnQuery->getColumns();
     }
@@ -181,12 +186,58 @@ class Select extends AbstractJoinQuery
         return $this->partitions;
     }
 
-    public function addColumn($column)
+    /**
+     * Añade una columna
+     * @param string $column 
+     * @param string $alias 
+     * @return Select 
+     */
+    public function addColumn(string $column, string $alias = ""): Select
     {
-        return $this->columnQuery->addColumn($column);
+        return $this->columnQuery->addColumn($column, $alias);
     }
 
-    public function addColumns($columns)
+    /**
+     * Añade una columna como función 
+     * @param string $alias 
+     * @param string $function 
+     * @param array $arguments 
+     * @return Select 
+     */
+    public function addColumnFunction(string $alias, string $function, array $arguments): Select
+    {
+        return $this->columnQuery->addColumnFunction($alias, $function, $arguments);
+    }
+
+    /**
+     * Añade un valor como columna
+     * @param string $alias 
+     * @param string $value 
+     * @return Select 
+     */
+    public function addColumnValue(string $alias, string $value): Select
+    {
+        return $this->columnQuery->addColumnValue($alias, $value);
+    }
+
+    /**
+     * Añade una columna con cualquier valor literal
+     * @param string $alias 
+     * @param string $column 
+     * @return Select 
+     */
+    public function addColumnCustom(string $alias, string $column): Select
+    {
+        return $this->columnQuery->addColumnCustom($alias, $column);
+    }
+
+
+    /**
+     * @deprecated por favor utiliza addColumn
+     * @param mixed $columns 
+     * @return Select 
+     */
+    public function addColumns($columns): Select
     {
         return $this->columnQuery->addColumns($columns);
     }
@@ -209,18 +260,12 @@ class Select extends AbstractJoinQuery
     }
 
     /**
-     * @return array
-     */
-    public function getColumnSelects()
-    {
-        return $this->columnQuery->getColumnSelects();
-    }
-
-    /**
      * Allows setting a value to the select statement.
      *
      * @param string $value
      * @param string $alias
+     * 
+     * @deprecated
      *
      * @return ColumnQuery
      */
@@ -230,33 +275,19 @@ class Select extends AbstractJoinQuery
     }
 
     /**
-     * @return array
-     */
-    public function getColumnValues()
-    {
-        return $this->columnQuery->getColumnValues();
-    }
-
-    /**
      * Allows calculation on columns using predefined SQL functions.
      *
      * @param string   $funcName
      * @param string[] $arguments
      * @param string   $alias
+     * 
+     * @deprecated
      *
      * @return ColumnQuery
      */
-    public function setFunctionAsColumn($funcName, array $arguments, $alias)
+    public function setFunctionAsColumn($funcName, array $arguments, $alias): Select
     {
         return $this->columnQuery->setFunctionAsColumn($funcName, $arguments, $alias);
-    }
-
-    /**
-     * @return array
-     */
-    public function getColumnFuncs()
-    {
-        return $this->columnQuery->getColumnFuncs();
     }
 
     /**
@@ -283,7 +314,7 @@ class Select extends AbstractJoinQuery
      *
      * @return ColumnQuery
      */
-    public function count($columnName = '*', $alias = '')
+    public function count($columnName = '*', $alias = 'counter')
     {
         return $this->columnQuery->count($columnName, $alias);
     }

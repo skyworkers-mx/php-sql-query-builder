@@ -66,9 +66,11 @@ class MySQL extends TestCase
 
     $q1 = $builder->select();
 
-    $q1->setTable(["U" => "users"])
-      ->setValueAsColumn('Static_value', 'VALUE')
-      ->setFunctionAsColumn('SUM', ['field1, field2'], 'sum_column');
+    $q1
+      ->setTable(["U" => "users"])
+      ->selectAll()
+      ->addColumnValue('alias_custom_value', 1)
+      ->addColumnFunction('sum_column', 'SUM', ['field1, field2']);
 
     $q1
       ->innerJoin(["A" => "a_test1"], "A.id", "U.test_id")
@@ -92,7 +94,7 @@ class MySQL extends TestCase
       $this->queryToOneLine(
         "SELECT
               *,
-              'Static_value' AS `VALUE`,
+              '1' AS `alias_custom_value`,
               SUM(field1, field2) AS `sum_column`
           FROM
               `users` AS `U`
@@ -223,6 +225,70 @@ class MySQL extends TestCase
           INNER JOIN `table2` PARTITION(pb1, pb2, pb3) AS `B` ON (`A`.`id_b` = `B`.`id`)
           LEFT JOIN `table3` PARTITION(pc20, pc30, pc3) AS `C` ON (`B`.`id_c` = `C`.`id`)
           RIGHT JOIN `table4` PARTITION(pd100, pd200, pd300) AS `D` ON (`C`.`id_d` = `D`.`id`)")
+    );
+  }
+
+  /**
+   * @test
+   */
+  public function queryLongTest()
+  {
+    $builder = new MySqlBuilder();
+    $query = $builder->select();
+
+    $query
+      ->setTable('ACCOUNTS')
+      ->addColumn('Id', 'Index')
+      ->addColumn('Account')
+      ->addColumnCustom('Avg', 'SUM(column_a) / COUNT(column_a)')
+      ->addColumnFunction('status', 'IF', ['`status` = 1', 'Active', 'Inactive']);
+
+    $this->assertEquals(
+      $this->queryToOneLine($query),
+      $this->queryToOneLine(
+        "SELECT
+            `Id` AS `Index`,
+            `Account`,
+            SUM(column_a) / COUNT(column_a) AS `Avg`,
+            IF(`status` = 1, Active, Inactive) AS `status`
+          FROM `ACCOUNTS`"
+      )
+    );
+  }
+
+  /**
+   * @test
+   */
+  public function queryFunctionTest()
+  {
+    $builder = new MySqlBuilder();
+    $query = $builder->select();
+
+    $query->setTable('ACCOUNTS');
+    $query->setColumns(['id']);
+    $query->setValueAsColumn('SUM(updated_percent) / COUNT(id)', 'efectivity');
+    $query->addColumns([
+      'valid_id' => 'IF(updated_percent IS NOT NULL, updated_percent * 100, 0)',
+    ]);
+    $query
+      ->where()
+      ->isNotNull("updated_percent")
+      ->equals("status", 2)
+      ->end();
+
+    $this->assertEquals(
+      $this->queryToOneLine($query),
+      $this->queryToOneLine(
+        "SELECT
+              `id`,
+              SUM(updated_percent) / COUNT(id) AS `efectivity`,
+              IF( updated_percent IS NOT NULL, updated_percent * 100, 0 ) AS `valid_id`
+          FROM
+              `ACCOUNTS`
+          WHERE
+              (`status` = 2)
+              AND (`updated_percent` IS NOT NULL)"
+      )
     );
   }
 }
