@@ -29,12 +29,16 @@ class UnionSetWriter extends AbstractSetWriter
 	public function write(Union $union)
 	{
 		if(!$this->union_type) {
-			throw new Exception("Por favor define el tipo de union del query");
+			throw new \Exception("Por favor define el tipo de union del query");
 		}
+
+		$query = '(' . $this->abstractWrite($union, 'getUnions', ") {$this->union_type} (") . ')';
+
 		$parts = [];
 		$this->writeSelectOrderBy($union, $parts);
 		$this->writeSelectLimit($union, $parts);
-		return $this->abstractWrite($union, 'getUnions', $this->union_type).implode("\n", $parts);
+		
+		return $query . implode("\n", $parts);
 	}
 
 	/**

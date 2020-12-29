@@ -46,13 +46,16 @@ class MySQL extends TestCase
     $q2 = $builder->select();
     $q2->setTable("users");
 
+    $q1->limit(10);
+    $q2->limit(10);
+
     $union->add($q1)->add($q2);
     $union->orderBy("id", "ASC");
     $union->limit(5, 10);
 
     $this->assertEquals(
       $this->queryToOneLine($union),
-      "SELECT * FROM `users` AS `U` UNION ALL SELECT * FROM `users` ORDER BY `id` ASC LIMIT 5, 10"
+      "( SELECT * FROM `users` AS `U` LIMIT 10, 0 ) UNION ALL ( SELECT * FROM `users` LIMIT 10, 0 ) ORDER BY `id` ASC LIMIT 5, 10"
     );
   }
 
