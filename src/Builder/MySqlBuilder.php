@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Author: Nil Portugués Calderó <contact@nilportugues.com>
  * Date: 6/3/14
@@ -52,7 +53,7 @@ class MySqlBuilder extends GenericBuilder
     public function writeTableName(Table $table)
     {
         $name = parent::writeTableName($table);
-        if($name instanceof Select || $name instanceof Union) {
+        if ($name instanceof Select || $name instanceof Union) {
             return "($name)";
         }
         return $this->wrapper(parent::writeTableName($table));
@@ -90,10 +91,10 @@ class MySqlBuilder extends GenericBuilder
      */
     protected function wrapper($string, $char = '`')
     {
-        if (0 === strlen($string)) {
+        if (@\strlen($alias) == 0) {
             return '';
         }
 
-        return $char.$string.$char;
+        return $char . $string . $char;
     }
 }

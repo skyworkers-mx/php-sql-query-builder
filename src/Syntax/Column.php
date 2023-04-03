@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Author: Nil Portugués Calderó <contact@nilportugues.com>
  * Date: 6/3/14
@@ -48,11 +49,13 @@ class Column implements QueryPartInterface
         $this->setAlias($alias);
     }
 
-    public function setIfIsAlias(bool $value) {
+    public function setIfIsAlias(bool $value)
+    {
         $this->is_alias = $value;
     }
 
-    public function isAlias() : bool {
+    public function isAlias(): bool
+    {
         return $this->is_alias;
     }
 
@@ -122,7 +125,7 @@ class Column implements QueryPartInterface
      */
     public function setAlias($alias)
     {
-        if (0 == \strlen($alias)) {
+        if (@\strlen($alias) == 0) {
             $this->alias = null;
 
             return $this;
