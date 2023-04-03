@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Author: Nil Portugués Calderó <contact@nilportugues.com>
  * Date: 6/3/14
@@ -92,16 +93,16 @@ final class QueryFactory
     /**
      * @return Union
      */
-    public static function createUnion( $builder )
+    public static function createUnion($builder)
     {
-        return new Union( $builder );
+        return new Union($builder);
     }
 
     /**
      * @return UnionAll
      */
-    public static function createUnionAll( $builder )
+    public static function createUnionAll($builder)
     {
-        return new UnionAll( $builder );
+        return new UnionAll($builder);
     }
 }

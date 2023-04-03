@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Author: Nil Portugués Calderó <contact@nilportugues.com>
  * Date: 6/3/14
@@ -165,13 +166,14 @@ class Where
      */
     public function conjunction($operator)
     {
-        if (false === \in_array(
+        if (
+            false === \in_array(
                 $operator,
                 [self::CONJUNCTION_AND, self::CONJUNCTION_OR, self::CONJUNCTION_OR_NOT, self::CONJUNCTION_AND_NOT]
             )
         ) {
             throw new QueryException(
-                "Invalid conjunction specified, must be one of AND or OR, but '".$operator."' was found."
+                "Invalid conjunction specified, must be one of AND or OR, but '" . $operator . "' was found."
             );
         }
         $this->conjunction = $operator;
@@ -635,12 +637,12 @@ class Where
     {
         return $this->isNull;
     }
-    
+
     /**
-    * @return QueryInterface
-    */
+     * @return QueryInterface
+     */
     public function end()
     {
-       return $this->query;
+        return $this->query;
     }
 }

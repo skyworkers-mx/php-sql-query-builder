@@ -138,6 +138,4 @@ class Table
 
         return $this;
     }
-
-
 }

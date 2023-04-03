@@ -91,7 +91,7 @@ class MySqlBuilder extends GenericBuilder
      */
     protected function wrapper($string, $char = '`')
     {
-        if (@\strlen($alias) == 0) {
+        if (@\strlen($string) == 0) {
             return '';
         }
 

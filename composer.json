@@ -1,5 +1,5 @@
 {
-    "name": "savior/test-sql-query-builder-extends",
+    "name": "alejandrosc/test-sql-query-builder-extends",
     "type":"library",
     "license":"MIT",
     "homepage":"http://nilportugues.com",
@@ -30,11 +30,12 @@
     },
     "require":
     {
-        "php": ">=8.2.4",
+        "php": ">=7.2",
         "nilportugues/sql-query-formatter": "~1.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8",
+        "phpunit/phpunit": "4.*",
+        "fabpot/php-cs-fixer": "~1.9",
         "nilportugues/php_backslasher": "~0.2"
     },
     "config":
